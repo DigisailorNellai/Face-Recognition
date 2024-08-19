@@ -1,5 +1,5 @@
 DATABASE = {
-    'name': 'face_recognition_db',
+    'name': 'hrm_portal',
     'user': 'postgres',
     'password': 'arsha0612',
     'host': 'localhost',

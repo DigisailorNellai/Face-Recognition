@@ -17,7 +17,7 @@ def capture_and_save_image(video_capture, save_directory, image_name):
 
 def store_face_in_database(face_id, name, face_encoding, image_path):
     try:
-        conn = psycopg2.connect(database="face_recognition_db", user="postgres", password="arsha0612", host="localhost", port="5432")
+        conn = psycopg2.connect(database="hrm_portal", user="postgres", password="arsha0612", host="localhost", port="5432")
         cursor = conn.cursor()
         cursor.execute("INSERT INTO faces (id, name, encoding, image_path) VALUES (%s, %s, %s, %s)",
                        (face_id, name, face_encoding.tobytes(), image_path))
