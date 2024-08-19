@@ -1,0 +1,87 @@
+FACE RECOGNITION
+
+ALGORITHM TO USE:
+CNNs in Dlib tend
+HoG 
+
+create table faces (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    encoding BYTEA NOT NULL)
+
+
+def store_face_in_database(face_id, name, face_encoding, image_path):
+    conn = psycopg2.connect(
+        dbname=DATABASE['face_recognition_db'],
+        user=DATABASE['postgres'],
+        password=DATABASE['arsha0612'],
+        host=DATABASE['localhost'],
+        port=DATABASE['5432']
+    )
+    cursor = conn.cursor()
+
+from config.config import DATABASE
+
+
+correct code1
+
+import face_recognition
+import cv2
+import numpy as np
+import psycopg2
+import os
+
+def capture_and_save_image(video_capture, save_directory, image_name):
+    ret, frame = video_capture.read()
+    if ret:
+        image_path = os.path.join(save_directory, image_name)
+        cv2.imwrite(image_path, frame)
+        print(f"Image saved at: {image_path}")
+        return frame, image_path
+    else:
+        print("Failed to capture image.")
+        return None, None
+
+def store_face_in_database(face_id, name, face_encoding, image_path):
+    conn = psycopg2.connect(database="face_recognition_db", user="postgres", password="arsha0612", host="localhost", port="5432")
+    cursor = conn.cursor()
+
+    cursor.execute("INSERT INTO faces (id, name, encoding, image_path) VALUES (%s, %s, %s, %s)",
+                   (face_id, name, face_encoding.tobytes(), image_path))
+
+    conn.commit()
+    conn.close()
+
+# Usage
+save_directory = "C:/Users/God/Desktop/Web_Development/Face_Recognition/Captured_Images"
+if not os.path.exists(save_directory):
+    os.makedirs(save_directory)
+
+video_capture = cv2.VideoCapture(0)
+
+face_id = input("Enter ID: ")
+name = input("Enter name: ")
+
+conditions = ['normal', 'different_angle', 'with_spectacles', 'different_color_dress', 'other']  # Modify as needed
+
+for i in range(5):  # Capturing 5 images
+    print(f"\nCondition {i+1}: {conditions[i]}")
+    image_name = f"{name}_{face_id}_{conditions[i]}.jpg"
+    frame, image_path = capture_and_save_image(video_capture, save_directory, image_name)
+
+    if frame is not None:
+        face_locations = face_recognition.face_locations(frame)
+        face_encodings = face_recognition.face_encodings(frame, face_locations)
+
+        if face_encodings:
+            store_face_in_database(face_id, name, face_encodings[0], image_path)
+            print(f"Stored face {i+1} for ID {face_id} under condition '{conditions[i]}' in database.")
+        else:
+            print("Face not found.")
+    else:
+        print("No frame captured.")
+
+video_capture.release()
+
+
+
